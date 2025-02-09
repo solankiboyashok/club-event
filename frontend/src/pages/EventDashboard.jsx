@@ -1,30 +1,16 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Import Link for navigation
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import event4 from "../assets/images/event4.png";
+import event5 from "../assets/images/event5.png";
+import event6 from "../assets/images/event6.png";
 
 const events = [
-  {
-    id: 1,
-    title: "Tech Conference 2025",
-    date: "March 15, 2025",
-    location: "San Francisco, CA",
-    image: "https://source.unsplash.com/600x300/?conference,technology",
-  },
-  {
-    id: 2,
-    title: "Music Fest",
-    date: "April 22, 2025",
-    location: "Los Angeles, CA",
-    image: "https://source.unsplash.com/600x300/?music,concert",
-  },
-  {
-    id: 3,
-    title: "Sports Championship",
-    date: "May 10, 2025",
-    location: "New York, NY",
-    image: "https://source.unsplash.com/600x300/?sports,competition",
-  },
+  { id: 1, title: "Cultural Events", date: "March 15, 2025", location: "San Francisco, CA", image: event4 },
+  { id: 2, title: "Technical Events", date: "April 22, 2025", location: "Los Angeles, CA", image: event5 },
+  { id: 3, title: "Academic and Outreach Events", date: "May 10, 2025", location: "New York, NY", image: event6 },
 ];
 
 const EventDashboard = () => {
@@ -32,37 +18,28 @@ const EventDashboard = () => {
     <div>
       <Header />
       <Container className="py-5">
-        {/* Page Title */}
         <Row className="mb-4 text-center">
           <Col>
-            <h1 className="fw-bold">Event Dashboard</h1>
-            <p className="text-muted">Manage and explore upcoming events.</p>
+            <h1 className="fw-bold">All Events</h1>
+            <p className="text-muted">Explore all upcoming events in one place.</p>
           </Col>
         </Row>
-
-        {/* Search Bar */}
-        <Row className="mb-4">
-          <Col md={{ span: 6, offset: 3 }}>
-            <Form.Control type="text" placeholder="Search events..." />
-          </Col>
-        </Row>
-
-        {/* Event List */}
         <Row>
           {events.map((event) => (
             <Col md={4} key={event.id} className="mb-4">
-              <Card className="shadow">
-                <Card.Img variant="top" src={event.image} style={{ height: "200px", objectFit: "cover" }} />
-                <Card.Body>
-                  <Card.Title>{event.title}</Card.Title>
-                  <Card.Text>
-                    <strong>Date:</strong> {event.date}
-                    <br />
-                    <strong>Location:</strong> {event.location}
-                  </Card.Text>
-                  <Button variant="primary">Register Now</Button>
-                </Card.Body>
-              </Card>
+              <Link to={`/clubs`} style={{ textDecoration: "none" }}> {/* Navigate to Club Page */}
+                <Card className="shadow">
+                  <Card.Img variant="top" src={event.image} style={{ height: "200px", objectFit: "cover" }} />
+                  <Card.Body>
+                    <Card.Title>{event.title}</Card.Title>
+                    <Card.Text>
+                      <strong>Date:</strong> {event.date}
+                      <br />
+                      <strong>Location:</strong> {event.location}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
           ))}
         </Row>
