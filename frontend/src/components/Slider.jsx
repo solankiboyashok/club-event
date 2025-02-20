@@ -1,8 +1,8 @@
 import React from "react";
 import { Carousel } from "react-bootstrap";
-import slide1 from "../assets/images/event1.png";
-import slide2 from "../assets/images/event2.png";
-import slide3 from "../assets/images/event3.png";
+import slide1 from "../images/event1.png";
+import slide2 from "../images/event2.png";
+import slide3 from "../images/event3.png";
 import "./slider.css";  // Import the CSS file
 
 const CarouselComponent = () => {

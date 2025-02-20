@@ -3,10 +3,10 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CarouselComponent from "../components/Slider";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
-import event from "../assets/images/image.png";
-import event3 from "../assets/images/event3.png";
-import event2 from "../assets/images/event2.png";
-import event1 from "../assets/images/event1.png";
+import event from "../images/image.png";
+import event3 from "../images/event3.png";
+import event2 from "../images/event2.png";
+import event1 from "../images/event1.png";
 
 
 const Dashboard = () => {

@@ -2,11 +2,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import ClubDashboard from './pages/ClubDashboard';
-import EventDashboard from './pages/EventDashboard';
-import EventPage from "./pages/EventPage";
+import ClubDashboard from './pages/Club/ClubDashboard';
+import EventDashboard from './pages/EventD/EventDashboard';
+import EventPage from "./pages/EventD/EventPage";
 import ManageAccount from './pages/ManageAccount';
-import ClubDetails from "./pages/ClubDetails";
+import ClubDetails from "./pages/Club/ClubDetail";
+import ClubRegistration from "./pages/Club/ClubRegistration";
+import AdminDashboard from './pages/AdminDashboard';
 
 
 const App = () => {
@@ -20,7 +22,9 @@ const App = () => {
         <Route path="/events" element={<EventDashboard/>}/>
         <Route path="/event/:eventId" element={<EventPage />} />
         <Route path="/manage-account" element={<ManageAccount />} />
-        <Route path="/club/:id" element={<ClubDetails />} />
+        <Route path="/clubs/:id" element={<ClubDetails />} />
+        <Route path="/Clubregister/:id" element={<ClubRegistration />} />
+        <Route path="/Admin" element={<AdminDashboard />} />
         <Route path="/" element={<Login />} />
       </Routes>
     </Router>

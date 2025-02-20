@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Userlog from "../assets/images/Userlog.png"; // Default user image
+import Userlog from "../images/Userlog.png"; // Default user image
 
 const ManageAccount = () => {
   const [formData, setFormData] = useState({
