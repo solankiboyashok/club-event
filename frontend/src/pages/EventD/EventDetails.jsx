@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
+import { useParams } from "react-router-dom";
+import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 
 const events = [
   {
@@ -53,58 +53,53 @@ const events = [
     image: "https://www.northeasternchronicle.in/wp-content/uploads/2023/08/65FECEC5-F438-4960-AFC7-3AEEC0A0EA8A-1024x665.jpeg",
     description: "A competitive coding event for developers to solve real-world problems."
   }
+  // Add other events...
 ];
 
-const EventDashboard = () => {
-  const [search, setSearch] = useState("");
-  const navigate = useNavigate();
+const EventDetails = () => {
+  const { id } = useParams();
+  const event = events.find(e => e.id === parseInt(id));
 
-  const filteredEvents = events.filter(event => 
-    event.title.toLowerCase().includes(search.toLowerCase())
-  );
+  if (!event) {
+    return <h2 className="text-center">Event not found</h2>;
+  }
 
   return (
     <div>
       <Header />
       <Container className="py-5">
-        {/* Page Title */}
-        <Row className="mb-4 text-center">
-          <Col>
-            <h1 className="fw-bold">Event Dashboard</h1>
-            <p className="text-muted">Manage and explore upcoming events.</p>
-          </Col>
-        </Row>
-
-        {/* Search Bar */}
-        <Row className="mb-4">
-          <Col md={{ span: 6, offset: 3 }}>
-            <Form.Control 
-              type="text" 
-              placeholder="Search events..." 
-              value={search} 
-              onChange={(e) => setSearch(e.target.value)} 
-            />
-          </Col>
-        </Row>
-
-        {/* Event List */}
         <Row>
-          {filteredEvents.map((event) => (
-            <Col md={4} key={event.id} className="mb-4">
-              <Card className="shadow">
-                <Card.Img variant="top" src={event.image} style={{ height: "200px", objectFit: "cover" }} />
-                <Card.Body>
-                  <Card.Title>{event.title}</Card.Title>
-                  <Card.Text>
-                    <strong>Date:</strong> {event.date}
-                    <br />
-                    <strong>Location:</strong> {event.location}
-                  </Card.Text>
-                  <Button variant="primary" onClick={() => navigate(`/event/${event.id}`)}>View Details & Register</Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+          <Col md={6}>
+            <Card className="shadow">
+              <Card.Img variant="top" src={event.image} style={{ height: "300px", objectFit: "cover" }} />
+              <Card.Body>
+                <Card.Title>{event.title}</Card.Title>
+                <Card.Text>
+                  <strong>Date:</strong> {event.date} <br />
+                  <strong>Location:</strong> {event.location} <br />
+                  <strong>Description:</strong> {event.description}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6}>
+            <h3>Register for {event.title}</h3>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control type="text" placeholder="Enter your name" />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Email</Form.Label>
+                <Form.Control type="email" placeholder="Enter your email" />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Phone Number</Form.Label>
+                <Form.Control type="text" placeholder="Enter your phone number" />
+              </Form.Group>
+              <Button variant="primary" type="submit">Register</Button>
+            </Form>
+          </Col>
         </Row>
       </Container>
       <Footer />
@@ -112,4 +107,4 @@ const EventDashboard = () => {
   );
 };
 
-export default EventDashboard;
+export default EventDetails;

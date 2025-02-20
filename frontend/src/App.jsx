@@ -4,7 +4,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ClubDashboard from './pages/Club/ClubDashboard';
 import EventDashboard from './pages/EventD/EventDashboard';
-import EventPage from "./pages/EventD/EventPage";
+import EventDetails from "./pages/EventD/EventDetails";
 import ManageAccount from './pages/ManageAccount';
 import ClubDetails from "./pages/Club/ClubDetail";
 import ClubRegistration from "./pages/Club/ClubRegistration";
@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/clubs" element={<ClubDashboard/>}/>
         <Route path="/events" element={<EventDashboard/>}/>
-        <Route path="/event/:eventId" element={<EventPage />} />
+        <Route path="/event/:id" element={<EventDetails />} />
         <Route path="/manage-account" element={<ManageAccount />} />
         <Route path="/clubs/:id" element={<ClubDetails />} />
         <Route path="/Clubregister/:id" element={<ClubRegistration />} />
