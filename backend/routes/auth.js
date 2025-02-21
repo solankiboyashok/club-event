@@ -6,30 +6,43 @@ const sendEmail = require("../utils/emailService");
 
 const router = express.Router();
 
-// Generate a 6-digit OTP
+// ✅ Middleware to verify token
+const authenticateUser = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized: No token provided" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: "Invalid or expired token" });
+  }
+};
+
+// ✅ Generate a 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// Centralized Error Handling Middleware
+// ✅ Centralized Error Handling Middleware
 const errorHandler = (res, status, message, error = null) => {
   console.error(`❌ Error: ${message}`, error || "");
   return res.status(status).json({ message });
 };
 
-// Register Route (Supports OTP & Email Verification Link)
+// ✅ Register Route (Supports OTP & Email Verification)
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, method } = req.body; // "otp" or "email"
+    const { name, email, password, method } = req.body;
 
     let user = await User.findOne({ email });
     if (user) return errorHandler(res, 400, "User already exists");
 
-    // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     user = new User({ name, email, password: hashedPassword, verified: false });
 
     if (method === "otp") {
       user.otp = generateOTP();
-      user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); // OTP expires in 10 min
+      user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
       await sendEmail(email, "otp", user.otp);
     } else {
       const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1d" });
@@ -44,7 +57,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Verify OTP Route
+// ✅ Verify OTP Route
 router.post("/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -68,7 +81,7 @@ router.post("/verify-otp", async (req, res) => {
   }
 });
 
-// Verify Email Link Route
+// ✅ Verify Email Link Route
 router.get("/verify-email", async (req, res) => {
   try {
     const { token } = req.query;
@@ -77,10 +90,7 @@ router.get("/verify-email", async (req, res) => {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
-      if (error.name === "TokenExpiredError") {
-        return errorHandler(res, 400, "Verification link expired!");
-      }
-      return errorHandler(res, 400, "Invalid verification token!");
+      return errorHandler(res, 400, error.name === "TokenExpiredError" ? "Verification link expired!" : "Invalid verification token!");
     }
 
     const user = await User.findOne({ email: decoded.email });
@@ -96,46 +106,37 @@ router.get("/verify-email", async (req, res) => {
   }
 });
 
-// Login Route
+// ✅ Login Route
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("🔍 Login attempt for:", email);
 
-    // Find user by email
     const user = await User.findOne({ email });
-    if (!user) {
-      console.log("❌ User not found!");
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-    if (!user.verified) {
-      return res.status(403).json({ message: "Please verify your email before logging in." });
-    }
+    if (!user.verified) return res.status(403).json({ message: "Please verify your email before logging in." });
 
-    // Log entered password and stored hashed password for debugging
-    console.log("Entered Password:", password);
-    console.log("Stored Hashed Password:", user.password);
-
-    // Compare entered password with stored hashed password
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("Password Match Result:", isMatch);
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    if (!isMatch) {
-      console.log("❌ Incorrect password!");
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    console.log("✅ Password matched!");
-
-    // Generate JWT Token
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.json({ message: "Login successful", token ,user});
+    res.json({ message: "Login successful", token, user });
 
   } catch (error) {
-    console.error("❌ Login Error:", error);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ✅ Get User Profile (Protected)
+router.get("/profile", authenticateUser, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user profile", error });
   }
 });
 

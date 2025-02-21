@@ -2,24 +2,24 @@ import React, { useState, useEffect, useRef } from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Userlog from "../images/Userlog.png"; // Ensure correct image path
-import { FaBell } from "react-icons/fa"; // Import notification bell icon
+import Userlog from "../images/Userlog.png";
+import { FaBell } from "react-icons/fa";
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false); // Notification dropdown state
-  const [userName, setUserName] = useState("User"); // Default fallback
-  const [notifications, setNotifications] = useState([]); // Store notifications
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [userName, setUserName] = useState("Unknown User"); 
+  const [notifications, setNotifications] = useState([]);
   const menuRef = useRef(null);
   const notificationRef = useRef(null);
   const navigate = useNavigate();
 
-  // Fetch user details from backend API
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
+          console.warn("No token found, redirecting to login.");
           navigate("/login");
           return;
         }
@@ -28,26 +28,28 @@ const Header = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        console.log("User Data Response:", response.data);
+
         if (response.data && response.data.name) {
           setUserName(response.data.name);
         } else {
           setUserName("Unknown User");
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Error fetching user data:", error);
         setUserName("Unknown User");
       }
     };
 
-    fetchUser();
+    fetchUserData();
   }, [navigate]);
 
-  // Fetch notifications
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/notifications");
-        setNotifications(response.data || []); // Store notifications
+        console.log("Notifications:", response.data);
+        setNotifications(response.data || []);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
@@ -56,7 +58,6 @@ const Header = () => {
     fetchNotifications();
   }, []);
 
-  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -72,10 +73,6 @@ const Header = () => {
     };
   }, []);
 
-  const handleManageAccount = () => {
-    navigate("/manage-account");
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -84,26 +81,21 @@ const Header = () => {
   return (
     <Navbar bg="white" variant="light" expand="lg" className="shadow-sm px-4">
       <Container className="d-flex justify-content-between align-items-center">
-        {/* Brand */}
         <Navbar.Brand as={Link} to="/" className="fw-bold text-primary">
           Eve<span className="text-warning">Club</span>
         </Navbar.Brand>
 
-        {/* Navigation Links */}
         <Nav className="d-none d-lg-flex">
           <Nav.Link as={Link} to="/dashboard">Home</Nav.Link>
           <Nav.Link as={Link} to="/clubs">Club</Nav.Link>
           <Nav.Link as={Link} to="/events">Event</Nav.Link>
         </Nav>
 
-        {/* User Profile & Notifications */}
         <div className="d-flex align-items-center gap-3">
-          
-          {/* Notification Bell Icon */}
           <div className="position-relative" ref={notificationRef}>
-            <div 
-              className="cursor-pointer" 
-              onClick={() => setShowNotifications(!showNotifications)} 
+            <div
+              className="cursor-pointer"
+              onClick={() => setShowNotifications(!showNotifications)}
               style={{ cursor: "pointer", fontSize: "1.5rem", position: "relative" }}
             >
               <FaBell className="text-dark" />
@@ -117,18 +109,9 @@ const Header = () => {
               )}
             </div>
 
-            {/* Notification Dropdown */}
             {showNotifications && (
-              <div
-                className="position-absolute end-0 mt-2 bg-white shadow rounded-lg p-3"
-                style={{
-                  width: "250px",
-                  zIndex: 1000,
-                  borderRadius: "8px",
-                  maxHeight: "300px",
-                  overflowY: "auto"
-                }}
-              >
+              <div className="position-absolute end-0 mt-2 bg-white shadow rounded-lg p-3"
+                   style={{ width: "250px", zIndex: 1000, borderRadius: "8px", maxHeight: "300px", overflowY: "auto" }}>
                 <h6 className="text-center fw-bold">Notifications</h6>
                 <hr className="m-2" />
                 {notifications.length > 0 ? (
@@ -145,7 +128,6 @@ const Header = () => {
             )}
           </div>
 
-          {/* User Profile Dropdown */}
           <div className="position-relative" ref={menuRef}>
             <div
               className="d-flex align-items-center gap-2 cursor-pointer"
@@ -162,19 +144,13 @@ const Header = () => {
             </div>
 
             {showMenu && (
-              <div
-                className="position-absolute end-0 mt-2 bg-white shadow rounded-lg p-3"
-                style={{
-                  width: "180px",
-                  zIndex: 1000,
-                  borderRadius: "8px",
-                }}
-              >
+              <div className="position-absolute end-0 mt-2 bg-white shadow rounded-lg p-3"
+                   style={{ width: "180px", zIndex: 1000, borderRadius: "8px" }}>
                 <div className="pb-2 border-bottom text-center">
                   <span className="fw-bold">{userName}</span>
                 </div>
                 <button
-                  onClick={handleManageAccount}
+                  onClick={() => navigate("/manage-account")}
                   className="w-100 text-start p-2 btn btn-light d-flex align-items-center"
                 >
                   ✏️ <span className="ms-2">Manage Account</span>

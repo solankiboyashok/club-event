@@ -68,8 +68,8 @@ const Register = () => {
 
       if (res.data.message.includes("verified")) {
         setRegistered(true);
-        alert("Registration successful! Redirecting to login...");
-        window.location.href = "/login";
+        alert("Registration successful! Redirecting to dashboard...");
+        window.location.href = "/dashboard";
       } else {
         setError("Invalid OTP. Please try again.");
       }
@@ -221,7 +221,7 @@ const Register = () => {
                   <div className="text-center mt-3">
                     <p>
                       Already have an account?{" "}
-                      <Link to="/dashboard" className="fw-bold" style={{ color: "#4776E6" }}>
+                      <Link to="/login" className="fw-bold" style={{ color: "#4776E6" }}>
                         Sign In
                       </Link>
                     </p>
