@@ -3,11 +3,11 @@ import { Carousel } from "react-bootstrap";
 import slide1 from "../images/event1.png";
 import slide2 from "../images/event2.png";
 import slide3 from "../images/event3.png";
-import "./slider.css";  // Import the CSS file
+import "./slider.css"; // Import the CSS file
 
 const CarouselComponent = () => {
   return (
-    <div className="container-fluid p-0">
+    <div className="carousel-container ">
       <Carousel fade interval={3000} className="carousel">
         <Carousel.Item>
           <img className="d-block w-100" src={slide1} alt="Tech Conference" />

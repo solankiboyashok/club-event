@@ -1,4 +1,4 @@
-/* Remove any extra margin or padding */
+Remove any extra margin or padding
 .carousel {
     margin-top: 0;
     padding-top: 0;
@@ -10,7 +10,7 @@
     height: 500px; /* Adjust as needed */
     object-fit:cover ;
   }
-  
+  /*  */
   /* Styling for the carousel caption */
   .carousel-caption {
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
@@ -30,9 +30,5 @@
     color: white;
   }
   
-  /* Remove default Bootstrap spacing */
-  .container-fluid {
-    padding: 0 !important;
-    margin: 0 !important;
-  }
+
   

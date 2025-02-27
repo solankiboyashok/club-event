@@ -8,7 +8,8 @@ import EventDetails from "./pages/EventD/EventDetails";
 import ManageAccount from './pages/ManageAccount';
 import ClubDetails from "./pages/Club/ClubDetail";
 import ClubRegistration from "./pages/Club/ClubRegistration";
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminLogin from './pages/Admin/AdminLogin';
 
 
 const App = () => {
@@ -24,7 +25,8 @@ const App = () => {
         <Route path="/manage-account" element={<ManageAccount />} />
         <Route path="/clubs/:id" element={<ClubDetails />} />
         <Route path="/Clubregister/:id" element={<ClubRegistration />} />
-        <Route path="/Admin" element={<AdminDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin-login" element={<AdminLogin/>} />
         <Route path="/" element={<Login />} />
       </Routes>
     </Router>
