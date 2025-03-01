@@ -10,7 +10,7 @@ import ClubDetails from "./pages/Club/ClubDetail";
 import ClubRegistration from "./pages/Club/ClubRegistration";
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminLogin from './pages/Admin/AdminLogin';
-
+import Profile from "./components/Profile"; // Import the Profile component
 
 const App = () => {
   return (
@@ -23,6 +23,7 @@ const App = () => {
         <Route path="/events" element={<EventDashboard/>}/>
         <Route path="/event/:id" element={<EventDetails />} />
         <Route path="/manage-account" element={<ManageAccount />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/clubs/:id" element={<ClubDetails />} />
         <Route path="/Clubregister/:id" element={<ClubRegistration />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />

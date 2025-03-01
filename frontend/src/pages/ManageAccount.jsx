@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Userlog from "../images/Userlog.png"; // Default user image
 
@@ -19,6 +20,7 @@ const ManageAccount = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -100,7 +102,7 @@ const ManageAccount = () => {
 
       if (response.data) {
         alert("Profile Updated Successfully!");
-        setProfilePic(response.data.user.profilePic);
+        navigate("/profile", { replace: true });
       }
     } catch (error) {
       console.error("Error updating profile:", error);
