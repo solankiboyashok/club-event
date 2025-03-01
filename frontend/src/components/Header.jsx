@@ -60,7 +60,7 @@ const Header = () => {
             const name = response.data?.name || "Unknown User";
             const capitalizedUserName = name.charAt(0).toUpperCase() + name.slice(1);
             setUserName(`Hello, ${capitalizedUserName}`);
-        } catch (error) {
+          } catch (error) {
             console.error("Error fetching user:", error);
             setUserName("Unknown User");
         }

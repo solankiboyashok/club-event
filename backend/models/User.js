@@ -9,7 +9,13 @@ const UserSchema = new mongoose.Schema({
   otp: { type: String },
   otpExpires: { type: Date },
   role: { type: String, enum: ["user", "admin", "club_admin"], default: "user" },
-});
+  formName: { type: String, default: "" }, // Name shown in the form
+  profilePic: { type: String, default: "" }, // Image URL
+  aboutMe: { type: String, default: "" },
+  skills: { type: [String], default: [] },
+  state: { type: String, default: "" },
+  city: { type: String, default: "" }
+}, { timestamps: true });
 
 // Hash password before saving
 UserSchema.pre("save", async function (next) {

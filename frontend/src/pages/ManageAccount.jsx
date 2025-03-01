@@ -12,12 +12,14 @@ const ManageAccount = () => {
     state: "",
     city: "",
     languagesKnown: "",
+    dashboardName: "",
+    formName: ""
   });
 
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [profilePic, setProfilePic] = useState("");
 
-  // Fetch user details on page load
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -42,7 +44,10 @@ const ManageAccount = () => {
             state: response.data.state || "",
             city: response.data.city || "",
             languagesKnown: response.data.languagesKnown || "",
+            dashboardName: response.data.dashboardName || "",
+            formName: response.data.formName || ""
           });
+          setProfilePic(response.data.profilePicture || "");
         }
         setLoading(false);
       } catch (error) {
@@ -55,38 +60,50 @@ const ManageAccount = () => {
     fetchUserData();
   }, []);
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle Profile Picture Upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData({ ...formData, profilePicture: reader.result }); // Set base64 image
+        setFormData({ ...formData, profilePicture: reader.result });
+        setProfilePic(file);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.put("http://localhost:5000/api/user/update-profile", formData, {
-        headers: { Authorization: `Bearer ${token}` },
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("formName", formData.formName);
+      formDataToSend.append("aboutMe", formData.aboutMe);
+      formDataToSend.append("skills", formData.skills);
+      formDataToSend.append("state", formData.state);
+      formDataToSend.append("city", formData.city);
+      if (profilePic) {
+        formDataToSend.append("profilePic", profilePic);
+      }
+
+      const response = await axios.put("http://localhost:5000/api/user/update-profile", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      setMessage(response.data.message || "Profile updated successfully!");
+      if (response.data) {
+        alert("Profile Updated Successfully!");
+        setProfilePic(response.data.user.profilePic);
+      }
     } catch (error) {
       console.error("Error updating profile:", error);
-      setMessage("Failed to update profile.");
     }
   };
 
@@ -97,7 +114,6 @@ const ManageAccount = () => {
       <h2>Manage Account</h2>
       {message && <p className="text-success">{message}</p>}
       <form onSubmit={handleSubmit}>
-        {/* Profile Picture Upload */}
         <div className="mb-3 text-center">
           <img
             src={formData.profilePicture || Userlog}
@@ -114,7 +130,7 @@ const ManageAccount = () => {
         <div className="row mb-3">
           <div className="col-md-6">
             <label className="form-label">Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-control" required />
+            <input type="text" name="formName" value={formData.formName} onChange={handleChange} className="form-control" />
           </div>
           <div className="col-md-6">
             <label className="form-label">User ID</label>
@@ -122,13 +138,11 @@ const ManageAccount = () => {
           </div>
         </div>
 
-        {/* About Me Section */}
         <div className="mb-3">
           <label className="form-label">About Me</label>
           <textarea name="aboutMe" value={formData.aboutMe} onChange={handleChange} className="form-control" rows="3"></textarea>
         </div>
 
-        {/* Skills Section */}
         <div className="mb-3">
           <label className="form-label">Skills</label>
           <input type="text" name="skills" value={formData.skills} onChange={handleChange} className="form-control" />
@@ -145,7 +159,6 @@ const ManageAccount = () => {
           </div>
         </div>
 
-        {/* Languages Known */}
         <div className="mb-3">
           <label className="form-label">Languages Known</label>
           <input type="text" name="languagesKnown" value={formData.languagesKnown} onChange={handleChange} className="form-control" />
