@@ -8,8 +8,9 @@ import { FaBell } from "react-icons/fa";
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [userName, setUserName] = useState("Unknown User"); 
+  const [userName, setUserName] = useState("Unknown User");
   const [notifications, setNotifications] = useState([]);
+  const [buttonText, setButtonText] = useState("Manage Account");
   const menuRef = useRef(null);
   const notificationRef = useRef(null);
   const navigate = useNavigate();
@@ -46,29 +47,28 @@ const Header = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                navigate("/login");
-                return;
-            }
-
-            const response = await axios.get("http://localhost:5000/api/user/profile", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            const name = response.data?.name || "Unknown User";
-            const capitalizedUserName = name.charAt(0).toUpperCase() + name.slice(1);
-            setUserName(`Hello, ${capitalizedUserName}`);
-          } catch (error) {
-            console.error("Error fetching user:", error);
-            setUserName("Unknown User");
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          navigate("/login");
+          return;
         }
+
+        const response = await axios.get("http://localhost:5000/api/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const name = response.data?.name || "Unknown User";
+        const capitalizedUserName = name.charAt(0).toUpperCase() + name.slice(1);
+        setUserName(`Hello, ${capitalizedUserName}`);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setUserName("Unknown User");
+      }
     };
 
     fetchUser();
-}, []);
-
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -83,6 +83,13 @@ const Header = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, []);
+
+  useEffect(() => {
+    const submitted = localStorage.getItem("formSubmitted") === "true";
+    if (submitted) {
+      setButtonText("Profile");
+    }
   }, []);
 
   const handleLogout = () => {
@@ -162,10 +169,10 @@ const Header = () => {
                   <span className="fw-bold">{userName}</span>
                 </div>
                 <button
-                  onClick={() => navigate("/manage-account")}
+                  onClick={() => navigate(buttonText === "Profile" ? "/profile" : "/manage-account")}
                   className="w-100 text-start p-2 btn btn-light d-flex align-items-center"
                 >
-                  ✏️ <span className="ms-2">Manage Account</span>
+                  ✏️ <span className="ms-2">{buttonText}</span>
                 </button>
                 <button
                   onClick={handleLogout}

@@ -20,6 +20,7 @@ const ManageAccount = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,6 +61,10 @@ const ManageAccount = () => {
     };
 
     fetchUserData();
+
+    // Check if the form was submitted before (persistent state)
+    const submitted = localStorage.getItem("formSubmitted") === "true";
+    setIsSubmitted(submitted);
   }, []);
 
   const handleChange = (e) => {
@@ -102,6 +107,8 @@ const ManageAccount = () => {
 
       if (response.data) {
         alert("Profile Updated Successfully!");
+        localStorage.setItem("formSubmitted", "true");
+        setIsSubmitted(true);
         navigate("/profile", { replace: true });
       }
     } catch (error) {
