@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Card, Alert, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // Import axios for API calls
-import { CalendarCheck } from "lucide-react";
+import axios from "axios";
+import { CalendarCheck, Users, Star } from "lucide-react";
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "", role: "user" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Handle form input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
+  const handleRoleSelect = (role) => {
+    setFormData({ ...formData, role });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -28,9 +30,17 @@ const Login = () => {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        console.log("Token stored:", localStorage.getItem("token"));
 
-        navigate("/dashboard"); // Redirect to Dashboard
+        switch (res.data.user.role) {
+          case "subadmin":
+            navigate("/subadmin");
+            break;
+          case "user":
+            navigate("/dashboard");
+            break;
+          default:
+            navigate("/dashboard");
+        }
       } else {
         setError("Login failed. No token received.");
       }
@@ -56,11 +66,6 @@ const Login = () => {
       <Container>
         <Row className="justify-content-center">
           <Col md={6} lg={5}>
-            <div className="text-center text-white mb-4">
-              <CalendarCheck size={50} className="mb-3" strokeWidth={1.5} />
-              <h1 className="display-6 fw-bold mb-2">EventHub</h1>
-              <p className="lead">Your Gateway to Amazing Events</p>
-            </div>
             <Card
               className="border-0"
               style={{
@@ -70,9 +75,9 @@ const Login = () => {
               }}
             >
               <Card.Body className="p-5">
-                <div className="text-center mb-4">
-                  <h2 className="fw-bold" style={{ color: "#2c3e50" }}>Welcome Back</h2>
-                  <p className="text-muted">Sign in to manage your events</p>
+                <div className="text-center mb-4 d-flex align-items-center justify-content-center">
+                  <h2 className="fw-bold me-2" style={{ color: "#2c3e50" }}>Login </h2>
+                  <CalendarCheck size={32} strokeWidth={1.5} />
                 </div>
 
                 {error && <Alert variant="danger">{error}</Alert>}
@@ -113,6 +118,32 @@ const Login = () => {
                       }}
                     />
                   </Form.Group>
+
+                  <div className="mb-4">
+                    <Form.Label className="fw-semibold">Select Your Role</Form.Label>
+                    <div className="d-flex gap-3">
+                      <div
+                        className={`p-3 border rounded text-center w-50 ${
+                          formData.role === "user" ? "bg-light border-primary" : "bg-white"
+                        }`}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleRoleSelect("user")}
+                      >
+                        <Users size={24} className="mb-2 text-primary" />
+                        <span className="d-block fw-bold">User</span>
+                      </div>
+                      <div
+                        className={`p-3 border rounded text-center w-50 ${
+                          formData.role === "subadmin" ? "bg-light border-primary" : "bg-white"
+                        }`}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => handleRoleSelect("subadmin")}
+                      >
+                        <Star size={24} className="mb-2 text-warning" />
+                        <span className="d-block fw-bold">Sub-Admin</span>
+                      </div>
+                    </div>
+                  </div>
 
                   <Button
                     variant="primary"

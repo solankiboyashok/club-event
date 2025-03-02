@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
   verified: { type: Boolean, default: false },
   otp: { type: String },
   otpExpires: { type: Date },
-  role: { type: String, enum: ["user", "admin", "club_admin"], default: "user" },
+
 });
 
 // Hash password before saving

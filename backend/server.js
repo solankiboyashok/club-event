@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const authRoutes = require("./routes/auth");
-const adminRoutes = require("./routes/admin");
+const adminRoutes = require("./routes/admin");  // Make sure this matches the actual file name
 const userRoutes = require("./routes/userRoutes");
 
 const PORT = process.env.PORT || 5000;  // Define PORT before using it
