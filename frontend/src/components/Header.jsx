@@ -45,18 +45,30 @@ const Header = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/notifications");
-        console.log("Notifications:", response.data);
-        setNotifications(response.data || []);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
+    const fetchUser = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+
+            const response = await axios.get("http://localhost:5000/api/user/profile", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const name = response.data?.name || "Unknown User";
+            const capitalizedUserName = name.charAt(0).toUpperCase() + name.slice(1);
+            setUserName(`Hello, ${capitalizedUserName}`);
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            setUserName("Unknown User");
+        }
     };
 
-    fetchNotifications();
-  }, []);
+    fetchUser();
+}, []);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
