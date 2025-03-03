@@ -11,6 +11,7 @@ import ClubRegistration from "./pages/Club/ClubRegistration";
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminLogin from './pages/Admin/AdminLogin';
 import SubAdminDashboard from './pages/Subadmin/Subadmindashboard';
+import UserManagement from './pages/Admin/UserManagement';
 
 
 const App = () => {
@@ -28,6 +29,10 @@ const App = () => {
         <Route path="/Clubregister/:id" element={<ClubRegistration />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin-login" element={<AdminLogin/>} />
+        
+        <Route path="/admin-users" element={<UserManagement />} />
+
+
         <Route path="/subadmin" element={<SubAdminDashboard/>} />
         <Route path="/" element={<Login />} />
       </Routes>

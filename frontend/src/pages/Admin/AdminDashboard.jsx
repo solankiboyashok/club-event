@@ -2,9 +2,17 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {
-  MDBTable, MDBTableHead, MDBTableBody, MDBBtn, MDBNavbar, MDBNavbarBrand, MDBSpinner
+  MDBNavbar,
+  MDBNavbarBrand,
+  MDBCard,
+  MDBCardBody,
+  MDBCardTitle,
+  MDBContainer,
+  MDBRow,
+  MDBCol,
 } from "mdb-react-ui-kit";
-import AdminSidebar from "./AdminSlidebar"; // Import Sidebar
+import { Users, Shield, Calendar, Building2 } from "lucide-react"; // Import Lucide icons
+import AdminSidebar from "./AdminSidebar";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -12,24 +20,31 @@ const AdminDashboard = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Default statistics (you can later fetch from backend)
+  const [stats, setStats] = useState({
+    totalUsers: 8,
+    totalSubAdmins: 5,
+    totalEvents: 20,
+    totalClubs: 10,
+  });
+
   useEffect(() => {
     const fetchUsers = async () => {
       const token = localStorage.getItem("token");
-
       if (!token) {
         navigate("/admin-login");
         return;
       }
-
       try {
         const res = await axios.get("http://localhost:5000/api/admin/users", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(res.data);
       } catch (err) {
-        setError("Failed to load users. Please try again.");
-        console.error("Error fetching users:", err);
-        if (err.response && err.response.status === 401) {
+        setError(
+          err.response?.data?.message || "Failed to load users. Please try again."
+        );
+        if (err.response?.status === 401) {
           localStorage.removeItem("token");
           navigate("/admin-login");
         }
@@ -37,86 +52,66 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchUsers();
   }, [navigate]);
 
-  const handleDeleteUser = async (userId) => {
-    if (window.confirm("Are you sure you want to delete this user permanently?")) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setUsers(users.filter(user => user._id !== userId));
-      } catch (error) {
-        console.error("Error deleting user:", error);
-        alert("Failed to delete user. Please try again.");
-      }
-    }
-  };
-
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      {/* Sidebar */}
+    <div style={{ display: "flex", height: "100vh", backgroundColor: "#f8f9fa" }}>
       <AdminSidebar />
 
-      {/* Main Content */}
-      <div style={{ flex: 1, padding: "20px", backgroundColor: "#f8f9fa", overflowX: "auto" }}>
+      <div style={{ flex: 1, padding: "20px", overflowX: "auto" }}>
+        {/* Navbar */}
         <MDBNavbar light bgColor="light" style={{ backgroundColor: "#fff", padding: "15px", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)" }}>
-          <MDBNavbarBrand>Admin Dashboard</MDBNavbarBrand>
+          <MDBNavbarBrand className="fw-bold">Admin Dashboard</MDBNavbarBrand>
         </MDBNavbar>
 
-        <h2 style={{ textAlign: "center", margin: "20px 0" }}>User Management</h2>
+        {/* Dashboard Title */}
+        <h2 className="text-center my-4">Dashboard Overview</h2>
 
-        {/* Loading Spinner */}
-        {loading && (
-          <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-            <MDBSpinner color="primary" />
-          </div>
-        )}
+        {/* Dashboard Statistics Cards */}
+        <MDBContainer>
+          <MDBRow className="g-4">
+            <MDBCol md="3">
+              <MDBCard className="text-center shadow-sm">
+                <MDBCardBody>
+                  <Users size={40} strokeWidth={2} className="text-primary mb-3" />
+                  <MDBCardTitle>Total Users</MDBCardTitle>
+                  <p className="fw-bold fs-4">{stats.totalUsers}</p>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
 
-        {/* Error Message */}
-        {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+            <MDBCol md="3">
+              <MDBCard className="text-center shadow-sm">
+                <MDBCardBody>
+                  <Shield size={40} strokeWidth={2} className="text-success mb-3" />
+                  <MDBCardTitle>Total Sub-Admins</MDBCardTitle>
+                  <p className="fw-bold fs-4">{stats.totalSubAdmins}</p>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
 
-        {/* User Table */}
-        {!loading && !error && (
-          <MDBTable bordered hover style={{ background: "white", borderRadius: "8px", overflow: "hidden" }}>
-            <MDBTableHead>
-              <tr style={{ backgroundColor: "#f1f1f1", textAlign: "left" }}>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Actions</th>
-              </tr>
-            </MDBTableHead>
-            <MDBTableBody>
-              {users.length > 0 ? (
-                users.map((user, index) => (
-                  <tr key={user._id}>
-                    <td style={{ padding: "12px" }}>{index + 1}</td>
-                    <td style={{ padding: "12px" }}>{user.name}</td>
-                    <td style={{ padding: "12px" }}>{user.email}</td>
-                    <td style={{ padding: "12px" }}>{user.role}</td>
-                    <td style={{ padding: "12px" }}>
-                      <MDBBtn color="danger" size="sm" style={{ fontSize: "14px", padding: "5px 12px", transition: "0.3s" }} 
-                        onClick={() => handleDeleteUser(user._id)}
-                        onMouseOver={(e) => e.target.style.backgroundColor = "darkred"}
-                        onMouseOut={(e) => e.target.style.backgroundColor = ""}>
-                        Delete
-                      </MDBBtn>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" style={{ textAlign: "center", padding: "12px" }}>No users found</td>
-                </tr>
-              )}
-            </MDBTableBody>
-          </MDBTable>
-        )}
+            <MDBCol md="3">
+              <MDBCard className="text-center shadow-sm">
+                <MDBCardBody>
+                  <Calendar size={40} strokeWidth={2} className="text-warning mb-3" />
+                  <MDBCardTitle>Total Events</MDBCardTitle>
+                  <p className="fw-bold fs-4">{stats.totalEvents}</p>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+
+            <MDBCol md="3">
+              <MDBCard className="text-center shadow-sm">
+                <MDBCardBody>
+                  <Building2 size={40} strokeWidth={2} className="text-danger mb-3" />
+                  <MDBCardTitle>Total Clubs</MDBCardTitle>
+                  <p className="fw-bold fs-4">{stats.totalClubs}</p>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+          </MDBRow>
+        </MDBContainer>
       </div>
     </div>
   );
