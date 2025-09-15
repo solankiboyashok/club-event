@@ -1,14 +1,22 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-// Configure Nodemailer
+// Configure Nodemailer (Gmail SMTP)
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
+
+// Verify transporter once at startup
+transporter
+  .verify()
+  .then(() => console.log("📧 Email transporter verified (Gmail SMTP)"))
+  .catch((err) => console.error("❌ Email transporter verification failed:", err));
 
 /**
  * Send an email with either an OTP or a verification link.
@@ -48,9 +56,11 @@ const sendEmail = async (to, type, data) => {
     };
 
     await transporter.sendMail(mailOptions);
-    console.log(`✅ ${type === "otp" ? "OTP" : "Verification"} email sent successfully`);
+    console.log(`✅ ${type === "otp" ? "OTP" : "Verification"} email sent successfully to ${to}`);
+    return true;
   } catch (error) {
-    console.error(`❌ Error sending ${type} email:`, error);
+    console.error(`❌ Error sending ${type} email to ${to}:`, error);
+    throw error;
   }
 };
 

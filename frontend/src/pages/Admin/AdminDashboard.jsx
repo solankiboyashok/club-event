@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   MDBNavbar,
   MDBNavbarBrand,
+  MDBBtn,
   MDBCard,
   MDBCardBody,
   MDBCardTitle,
@@ -11,7 +12,7 @@ import {
   MDBRow,
   MDBCol,
 } from "mdb-react-ui-kit";
-import { Users, Shield, Calendar, Building2 } from "lucide-react"; // Import Lucide icons
+import { Users, Shield, Calendar, Building2 } from "lucide-react";
 import AdminSidebar from "./AdminSidebar";
 
 const AdminDashboard = () => {
@@ -20,8 +21,8 @@ const AdminDashboard = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Default statistics (you can later fetch from backend)
-  const [stats, setStats] = useState({
+  // Default statistics
+  const [stats] = useState({
     totalUsers: 8,
     totalSubAdmins: 5,
     totalEvents: 20,
@@ -44,7 +45,7 @@ const AdminDashboard = () => {
         setError(
           err.response?.data?.message || "Failed to load users. Please try again."
         );
-        if (err.response?.status === 401) {
+        if (err.response?.status === 401 || err.response?.status === 403) {
           localStorage.removeItem("token");
           navigate("/admin-login");
         }
@@ -55,14 +56,34 @@ const AdminDashboard = () => {
     fetchUsers();
   }, [navigate]);
 
+  // ✅ Logout handler
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // clear token
+    navigate("/admin-login"); // redirect back to login
+  };
+
   return (
     <div style={{ display: "flex", height: "100vh", backgroundColor: "#f8f9fa" }}>
       <AdminSidebar />
 
       <div style={{ flex: 1, padding: "20px", overflowX: "auto" }}>
         {/* Navbar */}
-        <MDBNavbar light bgColor="light" style={{ backgroundColor: "#fff", padding: "15px", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)" }}>
+        <MDBNavbar
+          light
+          bgColor="light"
+          style={{
+            backgroundColor: "#fff",
+            padding: "15px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <MDBNavbarBrand className="fw-bold">Admin Dashboard</MDBNavbarBrand>
+          <MDBBtn color="danger" size="sm" onClick={handleLogout}>
+            Logout
+          </MDBBtn>
         </MDBNavbar>
 
         {/* Dashboard Title */}

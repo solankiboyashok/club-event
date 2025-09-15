@@ -6,6 +6,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");  // Make sure this matches the actual file name
 const userRoutes = require("./routes/userRoutes");
+const User = require("./models/User");
 
 const PORT = process.env.PORT || 5000;  // Define PORT before using it
 
@@ -27,7 +28,32 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("✅ MongoDB Connected"))
+  .then(async () => {
+    console.log("✅ MongoDB Connected");
+    // Seed default admin if not exists
+    try {
+      const adminEmail = process.env.DEFAULT_ADMIN_EMAIL || "admin@gmail.com";
+      const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD || "admin123";
+      const existingAdmin = await User.findOne({ email: adminEmail });
+      if (!existingAdmin) {
+        await User.create({
+          name: "Admin",
+          email: adminEmail,
+          password: adminPassword,
+          verified: true,
+          role: "admin",
+        });
+        console.log("👑 Default admin user created:", adminEmail);
+      } else if (existingAdmin.role !== "admin") {
+        existingAdmin.role = "admin";
+        existingAdmin.verified = true;
+        await existingAdmin.save();
+        console.log("👑 Elevated existing user to admin:", adminEmail);
+      }
+    } catch (seedErr) {
+      console.error("❌ Failed to seed default admin:", seedErr);
+    }
+  })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // Routes

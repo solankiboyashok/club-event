@@ -36,13 +36,32 @@ const UserManagement = () => {
     if (window.confirm("Are you sure you want to delete this user permanently?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+        if (!token) {
+          alert("No authentication token found. Please login again.");
+          return;
+        }
+        
+        const response = await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUsers(users.filter(user => user._id !== userId));
+        
+        if (response.status === 200) {
+          setUsers(users.filter(user => user._id !== userId));
+          alert("User deleted successfully!");
+        }
       } catch (error) {
         console.error("Error deleting user:", error);
-        alert("Failed to delete user. Please try again.");
+        if (error.response) {
+          // Server responded with error status
+          const errorMessage = error.response.data?.message || "Failed to delete user";
+          alert(`Error: ${errorMessage}`);
+        } else if (error.request) {
+          // Request was made but no response received
+          alert("Network error. Please check your connection and try again.");
+        } else {
+          // Something else happened
+          alert("An unexpected error occurred. Please try again.");
+        }
       }
     }
   };
